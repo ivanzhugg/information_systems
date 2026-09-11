@@ -1,0 +1,63 @@
+@startuml
+title Закупки автомобильных запчастей
+
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam roundcorner 8
+skinparam nodesep 65
+skinparam ranksep 65
+skinparam entity {
+    BackgroundColor #F0F6FC
+    BorderColor #34546F
+    FontColor #172B40
+}
+
+entity "Поставщик\nsupplier" as supplier {
+    * supplier_id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(200)
+    * address : VARCHAR(300)
+    * phone : VARCHAR(30)
+}
+
+entity "Деталь\npart" as part {
+    * article : VARCHAR(50) <<PK>>
+    --
+    * name : VARCHAR(200)
+    * price : DECIMAL(12, 2)
+}
+
+entity "Закупка\npurchase" as purchase {
+    * purchase_id : BIGINT <<PK>>
+    --
+    * supplier_id : BIGINT <<FK>>
+    * article : VARCHAR(50) <<FK>>
+    * purchase_date : DATE
+    * quantity : INTEGER
+}
+
+supplier ||--o{ purchase
+part ||--o{ purchase
+supplier -[hidden]right- part
+
+note bottom of purchase
+    quantity > 0
+    Стоимость = quantity × part.price
+    Повторные закупки в один день допустимы.
+end note
+
+note top of part
+    price > 0
+    Цена постоянная, общая для всех поставщиков.
+end note
+
+legend bottom
+    PK — первичный ключ; FK — внешний ключ
+    * — обязательное поле (NOT NULL)
+    || — ровно один; o{ — от нуля до многих
+endlegend
+@enduml
