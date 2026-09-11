@@ -1,0 +1,71 @@
+@startuml
+title Поставщики — диаграмма классов
+
+hide circle
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam roundcorner 8
+skinparam nodesep 55
+skinparam ranksep 55
+skinparam class {
+    BackgroundColor #F0F6FC
+    BorderColor #34546F
+    FontColor #172B40
+}
+
+class SupplierShort {
+    .. Поля ..
+    - __supplier_id : int
+    - __name : str
+    - __phone : str
+    .. Свойства ..
+    + supplier_id : int <<get>>
+    + name : str <<get, set>>
+    + phone : str <<get, set>>
+    .. Методы ..
+    + __init__(supplier_id: int, name: str, phone: str) : None
+    {static} + from_supplier(supplier: Supplier) : SupplierShort <<staticmethod>>
+    {static} # _validate_text(value: str, field: str, max_length: int) : str <<staticmethod>>
+    {static} + validate_supplier_id(value: int) : int <<staticmethod>>
+    {static} + validate_name(value: str) : str <<staticmethod>>
+    {static} + validate_phone(value: str) : str <<staticmethod>>
+    + __str__() : str
+    + to_short_string() : str
+    + __eq__(other: object) : bool
+}
+
+class Supplier {
+    .. Поля ..
+    - __address : str
+    .. Свойства ..
+    + address : str <<get, set>>
+    .. Методы ..
+    + __init__(supplier_id: int, name: str, address: str, phone: str) : None
+    {static} + from_string(text: str) : Supplier <<classmethod>>
+    {static} + from_json(text: str) : Supplier <<classmethod>>
+    {static} + validate_address(value: str) : str <<staticmethod>>
+    + __str__() : str
+}
+
+SupplierShort <|-- Supplier
+SupplierShort ..> Supplier : from_supplier() принимает Supplier
+
+note bottom of Supplier
+    Общие поля, свойства и методы наследуются от SupplierShort.
+    Конструктор вызывает конструктор базового класса через super().
+    Метод полного вывода переопределён.
+end note
+
+legend bottom
+    + публичный; - закрытый; # внутренний для класса и наследников (по соглашению Python)
+    get — чтение свойства; get, set — чтение и изменение
+    Подчёркнутые методы относятся к классу:
+    staticmethod — без self и cls; classmethod — получает cls
+    self и cls в сигнатурах не показаны.
+    Равенство: совпадение типа и ID; для другого типа возвращается NotImplemented.
+    Сплошная стрелка — наследование; пунктирная — зависимость.
+endlegend
+@enduml
